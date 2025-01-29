@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { TOKEN_KEY } from "../config/config.js";
 import { Model } from "sequelize";
 import { RoleModel } from "../models/Roles.model.js";
+import { ReservationModel } from "../models/Reservation.model.js";
+import { RoomModel } from "../models/Rooms.model.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -23,18 +25,22 @@ export const getOneUser = async (req, res) => {
     const user = await UserModel.findOne({
       attributes: ["id", "name", "lastname", "email"],
       where: { id: req.params.id },
-      /* include: [
+      include: [
         {
-          model: PersonsModel,
-        }
-      ] */
+          model: ReservationModel,
+          include: {
+            model: RoomModel,
+          },
+        },
+      ],
     });
     if (!user) {
-      res.status(404).json({ message: "user not found" });
+      return res.json({ message: "user not found" },404);
     }
-    res.status(200).json({ user });
+    return res
+      .json({ message: "usuario con reservas y habitaciones", data: user },200);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.json({ error: error.message },500);
   }
 };
 
@@ -116,21 +122,19 @@ export const updateUsersPassword = async (req, res) => {
     const userD = await UserModel.findOne({ where: { id: req.user_id } });
     const isMatch = await bcrypt.compare(password, userD.password);
     if (!isMatch) {
+      return res.status(400).json({ message: "La contraseña es incorrecta" });
+    }
+    if (password == newPassword) {
       return res
         .status(400)
-        .json({ message: "La contraseña es incorrecta" });
-    }
-    if(password==newPassword){
-      return res
-      .status(400)
-      .json({ message: "La contraseña no puede ser la misma a cambiar" });
+        .json({ message: "La contraseña no puede ser la misma a cambiar" });
     }
     const newPasswordEncrypt = await bcrypt.hash(newPassword, 10);
     userD.set({ ...userD, password: newPasswordEncrypt });
     await userD.save();
     return res.json({ message: "La contraseña ha sido cambiada" }, 200);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Server error", error });
   }
 };
