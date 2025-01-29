@@ -4,7 +4,6 @@ import cors from "cors";
 import { PORT } from './config/config.js';
 import  { RouterUsuer } from './router/UserRouter.js';
 import { sequelize } from "./db/conexion.js";
-import "./models/associations.js";
 
 const _PORT = PORT || 3000;
 const app = express();
@@ -27,3 +26,4 @@ const main = async () => {
 }
 main();
 
+import "./models/associations.js";
