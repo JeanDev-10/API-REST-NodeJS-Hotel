@@ -3,10 +3,12 @@ import { UserModel } from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { TOKEN_KEY } from "../config/config.js";
-import { Model } from "sequelize";
 import { RoleModel } from "../models/Roles.model.js";
 import { ReservationModel } from "../models/Reservation.model.js";
 import { RoomModel } from "../models/Rooms.model.js";
+import { ImageModel } from "../models/Images.model.js";
+import { StatusReservationModel } from "../models/StatusReservation.model.js";
+import { TypesRoomModel } from "../models/TypesRooms.model.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -25,22 +27,35 @@ export const getOneUser = async (req, res) => {
     const user = await UserModel.findOne({
       attributes: ["id", "name", "lastname", "email"],
       where: { id: req.params.id },
-      include: [
-        {
-          model: ReservationModel,
-          include: {
+      include: {
+        model: ReservationModel,
+        include: [
+          {
             model: RoomModel,
+            include: [
+              {
+                model: ImageModel,
+              },
+              {
+                model: TypesRoomModel,
+              },
+            ],
           },
-        },
-      ],
+          {
+            model: StatusReservationModel,
+          },
+        ],
+      },
     });
     if (!user) {
-      return res.json({ message: "user not found" },404);
+      return res.json({ message: "user not found" }, 404);
     }
-    return res
-      .json({ message: "usuario con reservas y habitaciones", data: user },200);
+    return res.json(
+      { message: "usuario con reservas y habitaciones", data: user },
+      200
+    );
   } catch (error) {
-    return res.json({ error: error.message },500);
+    return res.json({ error: error.message }, 500);
   }
 };
 

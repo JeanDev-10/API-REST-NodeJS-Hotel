@@ -3,6 +3,7 @@ import { StatusReservationModel } from "../models/StatusReservation.model.js";
 export const seedStatusReservations = async () => {
   try {
     await StatusReservationModel.bulkCreate([
+      {  name: "Pendiente" },
       {  name: "Confirmada" },
       {  name: "Cancelada" },
     ]);
