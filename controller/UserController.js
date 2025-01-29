@@ -222,4 +222,6 @@ export const me = async (req, res) => {
     return res.status(500).json({ message: "Error en el servidor", error });
   }
 };
-export const logout = (req, res) => {};
+export const logout = (req, res) => {
+  res.json({ message: 'Logout exitoso' });
+};

@@ -9,7 +9,7 @@ rotuer.post('/login', ValidateLoginUser,login);
 rotuer.get('/me', verifyToken,me);
 rotuer.get('/logout',verifyToken, logout);
 /* rotuer.get('/user',verifyToken, getUsers); */
-rotuer.get('/user/:id',verifyToken, getOneUser);
+/* rotuer.get('/user/:id',verifyToken, getOneUser); */
 /*rotuer.put('/user/:id',verifyToken, updateUsers);
 rotuer.delete('/user/:id', verifyToken, deleteUsers); */
 /* rotuer.put('/user/email/:id',verifyToken, updateUsersEmail); */
