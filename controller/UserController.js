@@ -18,7 +18,7 @@ export const getUsers = async (req, res) => {
 export const getOneUser = async (req, res) => {
   try {
     const user = await UserModel.findOne({
-      attributes: ['id', 'user','email','person_id'] ,
+      attributes: ['id', 'name','lastname','email',] ,
       where:{id:req.params.id},
       /* include: [
         {
@@ -44,14 +44,12 @@ export const getOneUser = async (req, res) => {
 export const createUsers = async (req, res) => {
   try {
     const { name,lastname, email, password } = req.body;
-    if (!(name || lastname ||  email ||  password ||  typeusers_id)) {
-      res.status(400).json({ message: "all input is required" });
-    }
-    // check if email already exist
-    // Validate if email exist in our database
-    const oldUser = await UserModel.findOne({ where: { email: email } });
+   
+    const oldUser = await UserModel.findOne({ where: { email: email.toLowerCase() } });
     if (oldUser) {
-      return res.status(409).json("email already exist");
+      return res.status(409).json({
+        "message":"El correo ya está en uso"
+      });
     }
     //Encrypt user password
    const encryptedPassword = await bcrypt.hash(password.toString(),10);
