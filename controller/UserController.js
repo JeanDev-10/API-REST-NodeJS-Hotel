@@ -111,17 +111,27 @@ export const updateUsersEmail = async (req, res) => {
   }
 };
 export const updateUsersPassword = async (req, res) => {
-  const { password } = req.body;
-  if (!password) {
-    res.status(400).json({ message: "password is required" });
-  }
-  const userD = await UserModel.findOne({ where: { id: req.params.id } });
-  if (userD) {
-    userD.set({ ...userD, password: password });
+  try {
+    const { password, newPassword } = req.body;
+    const userD = await UserModel.findOne({ where: { id: req.user_id } });
+    const isMatch = await bcrypt.compare(password, userD.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "La contraseña es incorrecta" });
+    }
+    if(password==newPassword){
+      return res
+      .status(400)
+      .json({ message: "La contraseña no puede ser la misma a cambiar" });
+    }
+    const newPasswordEncrypt = await bcrypt.hash(newPassword, 10);
+    userD.set({ ...userD, password: newPasswordEncrypt });
     await userD.save();
-    res.status(200).json({ message: "update" });
-  } else {
-    res.status(404).json({ message: "user not found" });
+    return res.json({ message: "La contraseña ha sido cambiada" }, 200);
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 export const deleteUsers = async (req, res) => {
@@ -198,16 +208,16 @@ export const refresh = (req, res) => {
 export const me = async (req, res) => {
   try {
     const user = await UserModel.findOne({
-      where: { id:req.user_id },
-      attributes: { exclude: ['password'] },
+      where: { id: req.user_id },
+      attributes: { exclude: ["password"] },
       include: {
         model: RoleModel,
-        attributes: ['id', 'name'] // Obtener solo ID y nombre del rol
-      }
+        attributes: ["id", "name"], // Obtener solo ID y nombre del rol
+      },
     });
 
     if (!user) {
-      return res.json({ message: "Usuario no encontrado" },404);
+      return res.json({ message: "Usuario no encontrado" }, 404);
     }
 
     return res.json(
@@ -218,10 +228,10 @@ export const me = async (req, res) => {
       200
     );
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({ message: "Error en el servidor", error });
   }
 };
 export const logout = (req, res) => {
-  res.json({ message: 'Logout exitoso' });
+  res.json({ message: "Logout exitoso" });
 };
