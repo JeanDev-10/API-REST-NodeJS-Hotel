@@ -36,7 +36,30 @@ export const getRooms = async (req, res) => {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
+export const getRoomById = async (req, res) => {
+  try {
+    const { id } = req.params; // ID de la habitación
 
+    // Buscar la habitación con sus relaciones
+    const room = await RoomModel.findByPk(id, {
+      include: [
+        { model: TypesRoomModel }, // Incluir el tipo de habitación
+        { model: ImageModel },  // Incluir las imágenes
+      ],
+    });
+
+    // Si no se encuentra la habitación
+    if (!room) {
+      return res.status(404).json({ message: "Habitación no encontrada" });
+    }
+
+    // Devolver la habitación con sus relaciones
+    return res.status(200).json({ room });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Error al obtener la habitación", error: error.message });
+  }
+};
 export const createRoom = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {

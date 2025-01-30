@@ -2,6 +2,7 @@ import express from "express";
 import { verifyIsAdmin } from "../middleware/role.js";
 import {
   createRoom,
+  getRoomById,
   getRooms,
   updateRoom,
 } from "../controller/RoomController.js";
@@ -11,6 +12,7 @@ import { validateUpdateRoom } from "../middleware/validations/ValidateEditRoom.j
 import { uploadValidateOptionalImages } from "../middleware/validations/UploadOptionalImageValidator.js";
 const rotuer = express.Router();
 rotuer.get("/", getRooms);
+rotuer.get("/:id", getRoomById);
 rotuer.post(
   "/",
   verifyIsAdmin,
