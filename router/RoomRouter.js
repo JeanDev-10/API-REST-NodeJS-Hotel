@@ -2,6 +2,7 @@ import express from "express";
 import { verifyIsAdmin } from "../middleware/role.js";
 import {
   createRoom,
+  deleteRoom,
   getRoomById,
   getRooms,
   updateRoom,
@@ -21,5 +22,6 @@ rotuer.post(
   createRoom
 );
 rotuer.put("/:id", verifyIsAdmin,uploadValidateOptionalImages, validateUpdateRoom, updateRoom);
+rotuer.delete("/:id", verifyIsAdmin, deleteRoom);
 
 export const RouterRooms = rotuer;

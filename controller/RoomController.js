@@ -4,6 +4,8 @@ import { TypesRoomModel } from "../models/TypesRooms.model.js";
 import { Op } from "sequelize"; // Para condiciones en el filtro
 import { sequelize } from "../db/conexion.js";
 import { deleteImageFromCloudinary, uploadImageToCloudinary } from "../services/ImageService.js";
+import { ReservationModel } from "../models/Reservation.model.js";
+import { StatusReservationModel } from "../models/StatusReservation.model.js";
 
 export const getRooms = async (req, res) => {
   try {
@@ -148,5 +150,60 @@ export const updateRoom = async (req, res) => {
   } catch (error) {
     await transaction.rollback();
     return res.status(500).json({ message: "Error al actualizar la habitación", error: error.message });
+  }
+};
+
+export const deleteRoom = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params; // ID de la habitación a eliminar
+
+    // Buscar la habitación con sus reservaciones
+    const room = await RoomModel.findByPk(id, {
+      include: [
+        { model: ReservationModel,
+          include:{
+            model: StatusReservationModel
+          }
+        }, // Incluir las reservaciones
+        { model: ImageModel },             // Incluir las imágenes
+      ],
+      transaction,
+    });
+
+    // Si no se encuentra la habitación
+    if (!room) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Habitación no encontrada" });
+    }
+
+    // Verificar si hay reservaciones activas (estado = 1)
+    const hasActiveReservations = room.reservations.some(
+      (reservation) => reservation.status_reservation.id === 1
+    );
+
+    if (hasActiveReservations) {
+      await transaction.rollback();
+      return res.status(400).json({ message: "No se puede eliminar la habitación porque tiene reservaciones activas" });
+    }
+
+    // Eliminar las imágenes de Cloudinary
+    for (const image of room.images) {
+      await deleteImageFromCloudinary(image.public_id); // Eliminar de Cloudinary
+    }
+
+    // Eliminar las imágenes de la base de datos
+    await ImageModel.destroy({ where: { room_id: id }, transaction });
+
+    // Eliminar la habitación
+    await RoomModel.destroy({ where: { id }, transaction });
+
+    // Confirmar la transacción
+    await transaction.commit();
+    return res.status(200).json({ message: "Habitación eliminada correctamente" });
+
+  } catch (error) {
+    await transaction.rollback();
+    return res.status(500).json({ message: "Error al eliminar la habitación", error: error.message });
   }
 };
