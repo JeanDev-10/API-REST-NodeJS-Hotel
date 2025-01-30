@@ -8,6 +8,7 @@ import { sequelize } from "./db/conexion.js";
 const _PORT = PORT || 3000;
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/api/v1/', RouterUsuer);
