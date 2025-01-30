@@ -3,7 +3,7 @@ import { ImageModel } from "../models/Images.model.js";
 import { TypesRoomModel } from "../models/TypesRooms.model.js";
 import { Op } from "sequelize"; // Para condiciones en el filtro
 import { sequelize } from "../db/conexion.js";
-import { uploadImageToCloudinary } from "../services/ImageService.js";
+import { deleteImageFromCloudinary, uploadImageToCloudinary } from "../services/ImageService.js";
 
 export const getRooms = async (req, res) => {
   try {
@@ -36,39 +36,6 @@ export const getRooms = async (req, res) => {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
-/* export const createRoom = async (req, res) => {
-  const transaction = await sequelize.transaction();
-  try {
-    const { name, description, price, type_id } = req.body;
-    const files = req.files; // Imágenes recibidas como archivos
-
-    // Crear la habitación dentro de la transacción
-    const room = await RoomModel.create(
-      { name, description, price, type_id },
-      { transaction }
-    );
-
-    // Subir imágenes a Cloudinary y guardarlas en la BD
-    const imageRecords = [];
-    for (const file of files) {
-      const { url, public_id } = await uploadImageToCloudinary(file.path);
-      const imageRecord = await ImageModel.create(
-        { room_id: room.id, url, public_id },
-        { transaction }
-      );
-      imageRecords.push(imageRecord);
-    }
-
-    // Confirmar la transacción
-    await transaction.commit();
-    return res.status(201).json({ message: "Habitación creada", room, images: imageRecords });
-
-  } catch (error) {
-    await transaction.rollback(); // Si hay un error, revertir todo
-    return res.status(500).json({ message: "Error al crear la habitación", error: error.message });
-  }
-}; */
 
 export const createRoom = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -106,5 +73,57 @@ export const createRoom = async (req, res) => {
     console.log(error)
     await transaction.rollback(); // Si hay un error, revertir todo
     return res.status(500).json({ message: "Error al crear la habitación", error: error.message });
+  }
+};
+
+export const updateRoom = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params; // ID de la habitación a editar
+    const { name, description, price, type_id } = req.body;
+    const files = req.files?.images; // Imágenes subidas (opcional)
+
+    // Buscar la habitación existente
+    const room = await RoomModel.findByPk(id, { transaction });
+    if (!room) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Habitación no encontrada" });
+    }
+
+    // Actualizar los datos de la habitación
+    if (name) room.name = name;
+    if (description) room.description = description;
+    if (price) room.price = price;
+    if (type_id) room.type_id = type_id;
+    await room.save({ transaction });
+
+    // Si se suben nuevas imágenes
+    if (files && files.length > 0) {
+      // Eliminar las imágenes antiguas de Cloudinary y la base de datos
+      const oldImages = await ImageModel.findAll({ where: { room_id: id }, transaction });
+      for (const image of oldImages) {
+        await deleteImageFromCloudinary(image.public_id); // Eliminar de Cloudinary
+        await image.destroy({ transaction }); // Eliminar de la base de datos
+      }
+
+      // Subir las nuevas imágenes a Cloudinary y guardarlas en la base de datos
+      const imageRecords = [];
+      for (const file of files) {
+        const { url, public_id } = await uploadImageToCloudinary(file.buffer);
+        const imageRecord = await ImageModel.create(
+          { room_id: id, url, public_id },
+          { transaction }
+        );
+        imageRecords.push(imageRecord);
+      }
+    }
+
+    // Confirmar la transacción
+    await transaction.commit();
+    return res.status(200).json({ message: "Habitación actualizada", room });
+
+  } catch (error) {
+    await transaction.rollback();
+    return res.status(500).json({ message: "Error al actualizar la habitación", error: error.message });
   }
 };

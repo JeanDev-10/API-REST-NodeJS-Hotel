@@ -1,10 +1,23 @@
-import express from 'express';
-import  {verifyToken}  from '../middleware/auth.js';
-import { verifyIsAdmin } from '../middleware/role.js';
-import { createRoom, getRooms } from '../controller/RoomController.js';
-import { ValidateCreateRoom } from '../middleware/validations/ValidateCreateRoom.js';
-import { uploadValidateImages } from '../middleware/validations/UploadImageValidator.js';
+import express from "express";
+import { verifyIsAdmin } from "../middleware/role.js";
+import {
+  createRoom,
+  getRooms,
+  updateRoom,
+} from "../controller/RoomController.js";
+import { ValidateCreateRoom } from "../middleware/validations/ValidateCreateRoom.js";
+import { uploadValidateImages } from "../middleware/validations/UploadImageValidator.js";
+import { validateUpdateRoom } from "../middleware/validations/ValidateEditRoom.js";
+import { uploadValidateOptionalImages } from "../middleware/validations/UploadOptionalImageValidator.js";
 const rotuer = express.Router();
-rotuer.get('/', getRooms); 
-rotuer.post('/',verifyIsAdmin, uploadValidateImages,ValidateCreateRoom,createRoom); 
+rotuer.get("/", getRooms);
+rotuer.post(
+  "/",
+  verifyIsAdmin,
+  uploadValidateImages,
+  ValidateCreateRoom,
+  createRoom
+);
+rotuer.put("/:id", verifyIsAdmin,uploadValidateOptionalImages, validateUpdateRoom, updateRoom);
+
 export const RouterRooms = rotuer;
