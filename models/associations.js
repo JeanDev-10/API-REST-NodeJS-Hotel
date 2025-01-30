@@ -26,12 +26,10 @@ UserModel.belongsTo(RoleModel, {
  */
 TypesRoomModel.hasMany(RoomModel, {
   foreignKey: "type_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 RoomModel.belongsTo(TypesRoomModel, {
   foreignKey: "type_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 /**
@@ -39,12 +37,10 @@ RoomModel.belongsTo(TypesRoomModel, {
  */
 RoomModel.hasMany(ImageModel, {
   foreignKey: "room_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 ImageModel.belongsTo(RoomModel, {
   foreignKey: "room_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 
@@ -53,13 +49,13 @@ ImageModel.belongsTo(RoomModel, {
  */
 UserModel.hasMany(ReservationModel, {
   foreignKey: "user_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 ReservationModel.belongsTo(UserModel, {
   foreignKey: "user_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 
 /**
@@ -68,13 +64,13 @@ ReservationModel.belongsTo(UserModel, {
 
 RoomModel.hasMany(ReservationModel, {
   foreignKey: "room_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 ReservationModel.belongsTo(RoomModel, {
   foreignKey: "room_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 
 /**
@@ -82,11 +78,9 @@ ReservationModel.belongsTo(RoomModel, {
  */
 StatusReservationModel.hasMany(ReservationModel, {
   foreignKey: "status_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 ReservationModel.belongsTo(StatusReservationModel, {
   foreignKey: "status_id",
-  onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
