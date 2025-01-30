@@ -8,6 +8,7 @@ import { verifyToken } from "./middleware/auth.js";
 import { RouterRooms } from "./router/RoomRouter.js";
 import { TypeRoomRouter } from "./router/TypeRoomRouter.js";
 import { ReservationRouter } from "./router/ReservationRouter.js";
+import { CheckStatusReservation } from "./tasks schedule/cron.js";
 const _PORT = PORT || 3000;
 const app = express();
 app.use(express.json());
@@ -27,6 +28,7 @@ const main = async () => {
     app.listen(_PORT, () => {
       console.log(`Servidor corriendo en el puerto => ${_PORT}`);
     });
+    CheckStatusReservation()
   } catch (error) {
     console.log(`Error ${error}`);
   }
