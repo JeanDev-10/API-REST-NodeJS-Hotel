@@ -1,10 +1,11 @@
 import express from 'express';
 import { verifyIsAdmin,verifyIsClient } from '../middleware/role.js';
-import { cancelReservation, getAllReservationsWithDetails, getMyReservations, getReservationById } from '../controller/ReservationController.js';
+import { cancelReservation, createReservation, getAllReservationsWithDetails, getMyReservations, getReservationById } from '../controller/ReservationController.js';
+import { ValidateCreateReservation } from '../middleware/validations/ValidateCreateReservation.js';
 const rotuer = express.Router();
 rotuer.get('/',verifyIsAdmin,getAllReservationsWithDetails);
 rotuer.get('/client', verifyIsClient,getMyReservations);
 rotuer.get('/:id',getReservationById);
-/*rotuer.post('/',verifyIsAdmin,getAllTypesRooms);*/
-rotuer.patch('/:id', verifyIsClient,cancelReservation);
+rotuer.patch('/:id', verifyIsClient, cancelReservation);
+rotuer.post('/',verifyIsClient,ValidateCreateReservation,createReservation);
 export const ReservationRouter = rotuer;

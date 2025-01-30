@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { sequelize } from "../db/conexion.js";
 import { ImageModel } from "../models/Images.model.js";
 import { ReservationModel } from "../models/Reservation.model.js";
@@ -177,5 +178,78 @@ export const cancelReservation = async (req, res) => {
         message: "Error al cancelar la reservación",
         error: error.message,
       });
+  }
+};
+export const createReservation = async (req, res) => {
+  const transaction = await sequelize.transaction(); // Iniciar una transacción
+  try {
+    const { date_start, date_end, room_id } = req.body;
+    const user_id = req.user_id; // ID del usuario logeado
+
+    // Obtener la habitación para verificar su precio por noche
+    const room = await RoomModel.findByPk(room_id, { transaction });
+    if (!room) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Habitación no encontrada" });
+    }
+
+    // Calcular la cantidad de días
+    const startDate = new Date(date_start);
+    const endDate = new Date(date_end);
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)); // Diferencia en días
+
+    // Calcular el precio total
+    const pricePerNight = room.price; // Precio por noche de la habitación
+    const priceTotal = pricePerNight * daysDifference;
+
+    // Verificar disponibilidad de la habitación en el rango de fechas
+    const existingReservation = await ReservationModel.findOne({
+      where: {
+        room_id,
+        [Op.or]: [
+          {
+            date_start: { [Op.between]: [date_start, date_end] },
+          },
+          {
+            date_end: { [Op.between]: [date_start, date_end] },
+          },
+          {
+            [Op.and]: [
+              { date_start: { [Op.lte]: date_start } },
+              { date_end: { [Op.gte]: date_end } },
+            ],
+          },
+        ],
+      },
+      transaction,
+    });
+
+    // Si la habitación ya está reservada en ese rango de fechas
+    if (existingReservation) {
+      await transaction.rollback();
+      return res.status(400).json({ message: "La habitación ya está reservada en ese rango de fechas" });
+    }
+
+    // Crear la reservación
+    const reservation = await ReservationModel.create(
+      {
+        date_start,
+        date_end,
+        price_total: priceTotal, // Usar el precio calculado
+        user_id,
+        room_id,
+        status_id:1,
+      },
+      { transaction }
+    );
+
+    // Confirmar la transacción
+    await transaction.commit();
+    return res.status(201).json({ message: "Reservación creada correctamente", reservation });
+
+  } catch (error) {
+    await transaction.rollback(); // Revertir la transacción en caso de error
+    return res.status(500).json({ message: "Error al crear la reservación", error: error.message });
   }
 };
