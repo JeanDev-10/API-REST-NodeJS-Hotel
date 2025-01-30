@@ -43,3 +43,35 @@ export const getAllReservationsWithDetails = async (req, res) => {
       });
   }
 };
+export const getMyReservations = async (req, res) => {
+    try {
+      const userId = req.user_id; // Obtener el ID del usuario logeado desde el token JWT
+  
+      // Obtener las reservaciones del usuario logeado con sus relaciones
+      const reservations = await ReservationModel.findAll({
+        where: { user_id: userId }, // Filtrar por el ID del usuario logeado
+        include: [
+          { model: StatusReservationModel, }, // Estado de la reservación
+          {
+            model: RoomModel,
+             // Habitación reservada
+            include: [
+              { model: TypesRoomModel }, // Tipo de habitación
+              { model: ImageModel },   // Imágenes de la habitación
+            ],
+          },
+        ],
+      });
+  
+      // Si no hay reservaciones registradas para el usuario
+      if (!reservations || reservations.length === 0) {
+        return res.status(404).json({ message: "No se encontraron reservaciones para este usuario" });
+      }
+  
+      // Devolver la lista de reservaciones con sus relaciones
+      return res.status(200).json({ message:"Mis reservaciones", data:reservations });
+  
+    } catch (error) {
+      return res.status(500).json({ message: "Error al obtener las reservaciones", error: error.message });
+    }
+  };
