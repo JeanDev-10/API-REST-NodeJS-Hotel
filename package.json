@@ -5,9 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "nodemon app.js",
     "seed": "node seed.js",
-    "start": "node index.js"
+    "start": "node app.js",
+    "jest": "set NODE_OPTIONS=--experimental-vm-modules && jest"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,8 @@
     "sequelize": "^6.37.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.7.0",
+    "nodemon": "^2.0.20",
+    "supertest": "^7.0.0"
   }
 }
