@@ -4,7 +4,7 @@ import { seedStatusReservations } from "./Seeders/StatusReservationSeeder.js";
 import { seedTypeRooms } from "./Seeders/TypeRoomSeeder.js";
 import { seedUsers } from "./Seeders/UserSeeder.js";
 
-const runSeeders = async () => {
+export const runSeeders = async () => {
   try {
     await sequelize.query("SET FOREIGN_KEY_CHECKS = 0", { raw: true });
 

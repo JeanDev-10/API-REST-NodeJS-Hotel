@@ -4,7 +4,13 @@ import { sequelize } from "../../db/conexion.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../../models/UserModel.js"; // Importa el modelo de usuario
+import { seedRoles } from "../../Seeders/RoleSeeder.js";
 
+
+beforeAll(async () => {
+    await sequelize.sync({ force: true }); // Aquí ya están establecidas las relaciones
+    await seedRoles()
+});
 beforeEach(async () => {
   await sequelize.query("DELETE FROM users"); // Limpiar la tabla de usuarios
 });
