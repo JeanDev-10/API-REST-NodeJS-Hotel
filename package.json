@@ -8,7 +8,7 @@
     "dev": "nodemon app.js",
     "seed": "node seed.js",
     "start": "node app.js",
-    "jest": "set NODE_OPTIONS=--experimental-vm-modules && jest"
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest"
   },
   "keywords": [],
   "author": "",

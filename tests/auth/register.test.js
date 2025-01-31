@@ -1,20 +1,20 @@
 import request from "supertest";
 import app from "../../index.js"; // Importa tu aplicación Express
 import { sequelize } from "../../db/conexion.js";
+beforeEach(async () => {
+  await sequelize.query("DELETE FROM users"); // Limpiar la tabla de usuarios
+});
 
-describe("[POST/register]", () => {
-  beforeEach(async () => {
-    await sequelize.query("DELETE FROM users"); // Limpiar la tabla de usuarios
-  });
-
-  afterEach(async () => {
-    await sequelize.query("DELETE FROM users"); // Limpiar la tabla de usuarios
-    
-  });
+afterEach(async () => {
+  await sequelize.query("DELETE FROM users"); // Limpiar la tabla de usuarios
+  
+});
 // cerrar conexión con la base de datos  después de las pruebas
-  afterAll(async () =>{
-    await sequelize.close(); 
-  })
+afterAll(async () =>{
+  await sequelize.close(); 
+})
+describe("[POST/register]", () => {
+ 
   it("should register a new user", async () => {
     const newUser = {
       name: "John",
