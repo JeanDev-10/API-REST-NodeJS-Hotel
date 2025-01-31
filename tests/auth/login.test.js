@@ -37,7 +37,6 @@ describe("[POST /login]", () => {
     };
 
     const response = await request(app).post("/api/v1/login").send(loginData);
-
     expect(response.status).toBe(200); // Código de estado 200 (OK)
     expect(response.body).toHaveProperty("message", "inicio de sesión exitoso!");
     expect(response.body).toHaveProperty("token"); // Verificar que se devuelve un token
