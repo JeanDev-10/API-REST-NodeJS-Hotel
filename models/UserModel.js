@@ -24,6 +24,14 @@ export const UserModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    role_id: { 
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "roles", 
+        key: "id",
+      },
+    },
   },
   {
     timestamps: false,
