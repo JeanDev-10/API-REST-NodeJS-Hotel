@@ -130,7 +130,6 @@ describe("[GET /user/:id/reservations] - Obtener reservas de un usuario", () => 
       role_id: 2, // Rol de cliente
     });
     // Generar tokens para admin y cliente
-    const adminToken = generateToken(adminUser.id, true); // Admin
     const clientToken = generateToken(clientUser.id, false); // Cliente
     const roomType = await TypesRoomModel.create({ name: "Suite" });
     const room = await RoomModel.create({

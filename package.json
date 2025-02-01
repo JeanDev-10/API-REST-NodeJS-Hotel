@@ -8,7 +8,7 @@
     "dev": "nodemon app.js",
     "seed": "node seed.js",
     "start": "node app.js",
-    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --runInBand tests/reservation/getReservationByOneUser.test.js"
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --runInBand"
   },
   "keywords": [],
   "author": "",
