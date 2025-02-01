@@ -1,7 +1,7 @@
 {
   "name": "sequelize",
   "version": "1.0.0",
-  "description": "",
+  "description": "API para control de reservas de habitaciones en hotel",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -10,8 +10,8 @@
     "start": "node app.js",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --runInBand"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["reserva","habitaciones","hotel","API","NodeJS","Express","MySQL","Jest"],
+  "author": "Jean Rodríguez",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
