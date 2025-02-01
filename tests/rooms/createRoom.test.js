@@ -1,10 +1,6 @@
 import request from "supertest";
 import app from "../../index.js"; // Importa tu aplicación Express
 import { sequelize } from "../../db/conexion.js";
-import { RoomModel } from "../../models/Rooms.model.js";
-import { ImageModel } from "../../models/Images.model.js";
-import { TypesRoomModel } from "../../models/TypesRooms.model.js";
-import jwt from "jsonwebtoken";
 import { UserModel } from "../../models/UserModel.js";
 import { seedRoles } from "../../Seeders/RoleSeeder.js";
 import { seedTypeRooms } from "../../Seeders/TypeRoomSeeder.js";
@@ -12,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { generateToken } from "../utils/utils.js";
 
 // Obtener __dirname en módulos de ES
 const __filename = fileURLToPath(import.meta.url);
@@ -38,13 +35,7 @@ afterAll(async () => {
 });
 
 // Generar un token JWT válido para las pruebas
-const generateToken = (user) => {
-  return jwt.sign(
-    { user_id: user.id, email: user.email, role_id: user.role_id }, // Payload del token
-    "secretToken", // Clave secreta
-    { expiresIn: "1h" } // Tiempo de expiración
-  );
-};
+
 
 describe("[POST /api/v1/room] - Crear habitación", () => {
   let adminToken;

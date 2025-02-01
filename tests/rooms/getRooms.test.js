@@ -4,9 +4,9 @@ import { sequelize } from "../../db/conexion.js";
 import { RoomModel } from "../../models/Rooms.model.js";
 import { ImageModel } from "../../models/Images.model.js";
 import { TypesRoomModel } from "../../models/TypesRooms.model.js";
-import jwt from "jsonwebtoken";
 import { UserModel } from "../../models/UserModel.js";
 import { RoleModel } from "../../models/Roles.model.js";
+import { generateToken } from "../utils/utils.js";
 
 // Configuración inicial
 beforeAll(async () => {
@@ -29,14 +29,7 @@ afterAll(async () => {
   await sequelize.close(); // Cerrar la conexión con la base de datos
 });
 
-// Generar un token JWT válido para las pruebas
-const generateToken = (user) => {
-  return jwt.sign(
-    { user_id: user.id, email: user.email, role_id: user.role_id }, // Payload del token
-    "secretToken", // Clave secreta
-    { expiresIn: "1h" } // Tiempo de expiración
-  );
-};
+
 
 describe("[GET /room] - Obtener habitaciones", () => {
   let adminToken;
