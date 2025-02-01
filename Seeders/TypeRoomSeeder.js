@@ -3,8 +3,8 @@ import { TypesRoomModel } from "../models/TypesRooms.model.js";
 export const seedTypeRooms = async () => {
   try {
     await TypesRoomModel.bulkCreate([
-      { name: "Estándar" },
       {name: "Suite" },
+      { name: "Estándar" },
       { name: "Familiar" },
     ]);
     console.log("Tipos de habitación insertados correctamente");
