@@ -42,11 +42,22 @@ export const getRoomById = async (req, res) => {
   try {
     const { id } = req.params; // ID de la habitación
 
+    const currentDate = new Date();
     // Buscar la habitación con sus relaciones
     const room = await RoomModel.findByPk(id, {
       include: [
         { model: TypesRoomModel }, // Incluir el tipo de habitación
         { model: ImageModel },  // Incluir las imágenes
+        {
+          model: ReservationModel,
+          attributes: ['date_start','date_end'],
+           // Incluir las reservaciones
+          where: {
+            date_start: { [Op.gte]: currentDate }, // Solo reservaciones con fecha de inicio >= hoy
+            status_id: 1, // Solo reservaciones con estado "Pendiente"
+          },
+          required: false, // Para que no falle si no hay reservaciones
+        },
       ],
     });
 

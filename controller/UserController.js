@@ -27,25 +27,30 @@ export const getOneUser = async (req, res) => {
     const user = await UserModel.findOne({
       attributes: ["id", "name", "lastname", "email"],
       where: { id: req.params.id },
-      include: {
-        model: ReservationModel,
-        include: [
-          {
-            model: RoomModel,
-            include: [
-              {
-                model: ImageModel,
-              },
-              {
-                model: TypesRoomModel,
-              },
-            ],
-          },
-          {
-            model: StatusReservationModel,
-          },
-        ],
-      },
+      include: [
+        {
+          model: RoleModel,
+        },
+        {
+          model: ReservationModel,
+          include: [
+            {
+              model: RoomModel,
+              include: [
+                {
+                  model: ImageModel,
+                },
+                {
+                  model: TypesRoomModel,
+                },
+              ],
+            },
+            {
+              model: StatusReservationModel,
+            },
+          ],
+        },
+      ]
     });
     if (!user) {
       return res.json({ message: "user not found" }, 404);
