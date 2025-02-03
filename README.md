@@ -109,9 +109,9 @@ npm test
 ## Estructura del Repositorio
 
 - **Carpeta public**:
-  - **Reglas de Negocio**: `reglas_negocio.pdf`
-  - **Diseño de Base de Datos**: `database_design.png`
-  - **Colección de Insomnia**: `insomnia_collection.json`
+  - **Reglas de Negocio**: `Reglas de negocio.pdf`
+  - **Diseño de Base de Datos**: `Hotel Api DB.png`
+  - **Colección de Insomnia**: `Hotel app-request-insomnia.json`
 
 ## Endpoints Disponibles
 
