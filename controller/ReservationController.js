@@ -12,7 +12,9 @@ export const getAllReservationsWithDetails = async (req, res) => {
     // Obtener todas las reservaciones con sus relaciones
     const reservations = await ReservationModel.findAll({
       include: [
-        { model: UserModel }, // Usuario que realizó la reservación
+        { model: UserModel,attributes:{
+          exclude: ["password"], // Excluir la contraseña del usuario
+        } }, // Usuario que realizó la reservación
         { model: StatusReservationModel }, // Estado de la reservación
         {
           model: RoomModel,
@@ -91,7 +93,9 @@ export const getReservationById = async (req, res) => {
     // Buscar la reservación con sus relaciones
     const reservation = await ReservationModel.findByPk(id, {
       include: [
-        { model: UserModel }, // Usuario que realizó la reservación
+        { model: UserModel,attributes:{
+          exclude: ["password"], // Excluir la contraseña del usuario
+        } }, // Usuario que realizó la reservación
         { model: StatusReservationModel }, // Estado de la reservación
         {
           model: RoomModel,
