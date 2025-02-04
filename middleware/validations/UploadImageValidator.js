@@ -18,10 +18,10 @@ export const upload = multer({
 export const uploadValidateImages = (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message });
+      return res.status(422).json({ message: err.message });
     }
     if (!req.files || !req.files.images || req.files.images.length === 0) {
-        return res.status(400).json({ message: "Se debe subir al menos una imagen" });
+        return res.status(422).json({ message: "Se debe subir al menos una imagen" });
       }
     next();
   });
