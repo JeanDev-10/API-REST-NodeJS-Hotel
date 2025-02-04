@@ -130,7 +130,7 @@ describe("[POST /api/v1/room] - Crear habitación", () => {
     expect(response.body).toHaveProperty("message", "No autorizado");
   });
 
-  it("debería devolver un error 400 si no se suben imágenes", async () => {
+  it("debería devolver un error 422 si no se suben imágenes", async () => {
     // Datos de la habitación
     const roomData = {
       name: "Room 101",
@@ -149,14 +149,14 @@ describe("[POST /api/v1/room] - Crear habitación", () => {
       .field("type_id", roomData.type_id);
 
     // Verificar la respuesta
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     expect(response.body).toHaveProperty(
       "message",
       "Se debe subir al menos una imagen"
     );
   });
 
-  it("debería devolver un error 400 si los datos de la habitación son inválidos", async () => {
+  it("debería devolver un error 422 si los datos de la habitación son inválidos", async () => {
     // Datos de la habitación inválidos
     const roomData = {
       name: "", // Nombre vacío
@@ -179,7 +179,7 @@ describe("[POST /api/v1/room] - Crear habitación", () => {
       .attach("images", images[0], "image1.jpg");
 
     // Verificar la respuesta
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     expect(response.body).toHaveProperty("errors");
     expect(response.body.errors.length).toBeGreaterThan(0);
   });

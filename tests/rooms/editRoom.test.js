@@ -139,7 +139,7 @@ describe("[PUT /api/v1/room/:id] - Actualizar habitación", () => {
     expect(response.body).toHaveProperty("message", "Habitación no encontrada");
   });
 
-  it("debería devolver un error 400 si los datos son inválidos", async () => {
+  it("debería devolver un error 422 si los datos son inválidos", async () => {
     const invalidData = {
       name: "", // Nombre vacío
       description: "", // Descripción vacía
@@ -155,7 +155,7 @@ describe("[PUT /api/v1/room/:id] - Actualizar habitación", () => {
       .field("price", invalidData.price)
       .field("type_id", invalidData.type_id);
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     expect(response.body).toHaveProperty("errors");
     expect(response.body.errors.length).toBeGreaterThan(0);
   });
