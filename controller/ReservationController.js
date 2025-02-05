@@ -27,12 +27,7 @@ export const getAllReservationsWithDetails = async (req, res) => {
       ],
     });
 
-    // Si no hay reservaciones registradas
-    if (!reservations || reservations.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron reservaciones" });
-    }
+   
 
     // Devolver la lista de reservaciones con sus relaciones
     return res
@@ -64,13 +59,6 @@ export const getMyReservations = async (req, res) => {
         },
       ],
     });
-
-    // Si no hay reservaciones registradas para el usuario
-    if (!reservations || reservations.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron reservaciones para este usuario" });
-    }
 
     // Devolver la lista de reservaciones con sus relaciones
     return res

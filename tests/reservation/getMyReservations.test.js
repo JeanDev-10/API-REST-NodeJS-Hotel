@@ -101,21 +101,6 @@ describe("[GET /api/v1/reservation/client] - Obtener las reservaciones del usuar
     expect(reservation.room).toHaveProperty("images"); // Imágenes de la habitación
   });
 
-  it("debería devolver un error 404 si no hay reservaciones registradas para el usuario cliente", async () => {
-    // Limpiar la tabla de reservaciones
-    await sequelize.query("DELETE FROM reservations");
-
-    const response = await request(app)
-      .get("/api/v1/reservation/client")
-      .set("Authorization", `Bearer ${clientToken}`); // Token de cliente
-
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty(
-      "message",
-      "No se encontraron reservaciones para este usuario"
-    );
-  });
-
   it("debería devolver un error 403 si el usuario no es cliente (es administrador)", async () => {
     const response = await request(app)
       .get("/api/v1/reservation/client")
