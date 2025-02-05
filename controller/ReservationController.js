@@ -213,9 +213,12 @@ export const createReservation = async (req, res) => {
             ],
           },
         ],
+        status_id: { [Op.not]: 3 }, // No considerar reservaciones canceladas
       },
+      
       transaction,
     });
+    
 
     // Si la habitación ya está reservada en ese rango de fechas
     if (existingReservation) {
