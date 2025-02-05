@@ -52,9 +52,12 @@ export const getRoomById = async (req, res) => {
           model: ReservationModel,
           attributes: ['date_start','date_end'],
            // Incluir las reservaciones
-          where: {
+           where: {
             date_start: { [Op.gte]: currentDate }, // Solo reservaciones con fecha de inicio >= hoy
-            status_id: 1, // Solo reservaciones con estado "Pendiente"
+            [Op.or]: [
+              { status_id: 1 }, // Estado "Pendiente"
+              { status_id: 2 }, // Estado "Confirmado" (o el que corresponda)
+            ],
           },
           required: false, // Para que no falle si no hay reservaciones
         },

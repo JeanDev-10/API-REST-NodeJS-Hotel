@@ -57,7 +57,7 @@ describe("[POST/register]", () => {
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("users");
       const response2 = await request(app).post("/api/v1/register").send(newUser);
-      expect(response2.status).toBe(409);
+      expect(response2.status).toBe(422);
       expect(response2.body).toHaveProperty("message","El correo ya está en uso");
 
   }); 

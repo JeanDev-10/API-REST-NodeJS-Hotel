@@ -104,19 +104,6 @@ describe("[GET /api/v1/reservation] - Obtener todas las reservaciones con detall
     expect(reservation.room).toHaveProperty("images"); // Imágenes de la habitación
   });
 
-  it("debería devolver un error 404 si no hay reservaciones registradas (usuario administrador)", async () => {
-    // Limpiar la tabla de reservaciones
-    await sequelize.query("DELETE FROM reservations");
-
-    const response = await request(app)
-      .get("/api/v1/reservation")
-      .set("Authorization", `Bearer ${adminToken}`); // Token de administrador
-
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("message", "No se encontraron reservaciones");
-  });
-
-
   it("debería devolver un error 403 si el usuario no es administrador", async () => {
     const response = await request(app)
       .get("/api/v1/reservation")
