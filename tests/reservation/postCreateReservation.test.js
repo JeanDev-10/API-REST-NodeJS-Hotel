@@ -128,7 +128,7 @@ describe("[POST /api/v1/reservation] - Crear una reservación", () => {
       })
       .set("Authorization", `Bearer ${clientToken}`);
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     expect(response.body.errors[0].msg).toBe(
       "La fecha de inicio no puede ser inferior a la fecha actual"
     );
@@ -144,7 +144,7 @@ describe("[POST /api/v1/reservation] - Crear una reservación", () => {
       })
       .set("Authorization", `Bearer ${clientToken}`);
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     expect(response.body.errors[0].msg).toBe(
       "La fecha de fin no puede ser menor a la fecha de inicio"
     );

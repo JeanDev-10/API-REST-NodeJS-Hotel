@@ -17,7 +17,7 @@ export const upload = multer({
 export const uploadValidateOptionalImages = (req, res, next) => {
     upload(req, res, (err) => {
       if (err) {
-        return res.status(400).json({ message: err.message });
+        return res.status(422).json({ message: err.message });
       }
       // Si no hay imágenes, continuar sin error
       if (!req.files || !req.files.images) {
