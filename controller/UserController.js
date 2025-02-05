@@ -72,7 +72,7 @@ export const createUsers = async (req, res) => {
       where: { email: email.toLowerCase() },
     });
     if (oldUser) {
-      return res.status(409).json({
+      return res.status(422).json({
         message: "El correo ya está en uso",
       });
     }
