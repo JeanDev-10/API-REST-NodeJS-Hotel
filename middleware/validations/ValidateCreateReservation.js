@@ -39,17 +39,11 @@ export const ValidateCreateReservation = [
   body("date_end").custom((value, { req }) => {
     const dateStart = new Date(req.body.date_start);
     const dateEnd = new Date(value);
-
-    // Normalizar ambas fechas a medianoche (00:00:00)
-    dateStart.setHours(0, 0, 0, 0);
-    dateEnd.setHours(0, 0, 0, 0);
-
     if (dateEnd < dateStart) {
       throw new Error(
         "La fecha de fin no puede ser menor a la fecha de inicio"
       );
     }
-
     // Validar que la reservación sea de al menos 1 día
     if (
       dateStart.toISOString().split("T")[0] ===
