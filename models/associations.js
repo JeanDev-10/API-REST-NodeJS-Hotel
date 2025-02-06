@@ -38,10 +38,12 @@ RoomModel.belongsTo(TypesRoomModel, {
 RoomModel.hasMany(ImageModel, {
   foreignKey: "room_id",
   onUpdate: "CASCADE",
+  onDelete:"CASCADE"
 });
 ImageModel.belongsTo(RoomModel, {
   foreignKey: "room_id",
   onUpdate: "CASCADE",
+  onDelete:"CASCADE"
 });
 
 /**
@@ -65,12 +67,10 @@ ReservationModel.belongsTo(UserModel, {
 RoomModel.hasMany(ReservationModel, {
   foreignKey: "room_id",
   onUpdate: "CASCADE",
-  onDelete: "CASCADE",
 });
 ReservationModel.belongsTo(RoomModel, {
   foreignKey: "room_id",
   onUpdate: "CASCADE",
-  onDelete: "CASCADE",
 });
 
 /**
