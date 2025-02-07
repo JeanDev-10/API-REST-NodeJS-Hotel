@@ -9,11 +9,11 @@ export const ReservationModel = sequelize.define(
       autoIncrement: true,
     },
     date_start: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     date_end: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     price_total: {
