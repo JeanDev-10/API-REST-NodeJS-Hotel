@@ -20,15 +20,10 @@ export const ValidateCreateReservation = [
     .isInt()
     .withMessage("El ID de la habitación debe ser un número entero"),
 
-  // Validar fechas
-  body("date_start").custom((value) => {
-    const dateStart = new Date(value);
-    const currentDate = new Date();
-
-    // Normalizar ambas fechas a medianoche (00:00:00)
-    dateStart.setHours(0, 0, 0, 0);
-    currentDate.setHours(0, 0, 0, 0);
-
+  // Validar y normalizar fechas
+  body("date_start").custom((value, { req }) => {
+    let dateStart = new Date(value);
+    let currentDate = new Date();
     if (dateStart < currentDate) {
       throw new Error(
         "La fecha de inicio no puede ser inferior a la fecha actual"
@@ -37,21 +32,20 @@ export const ValidateCreateReservation = [
     return true;
   }),
   body("date_end").custom((value, { req }) => {
-    const dateStart = new Date(req.body.date_start);
-    const dateEnd = new Date(value);
-    if (dateEnd < dateStart) {
-      throw new Error(
-        "La fecha de fin no puede ser menor a la fecha de inicio"
-      );
+    let dateStart = new Date(req.body.date_start);
+    let dateEnd = new Date(value);
+    if (dateEnd <= dateStart) {
+      throw new Error("La fecha de fin debe ser mayor a la fecha de inicio");
     }
-    // Validar que la reservación sea de al menos 1 día
-    if (
-      dateStart.toISOString().split("T")[0] ===
-      dateEnd.toISOString().split("T")[0]
-    ) {
-      throw new Error(
-        "La reservación debe ser de al menos 1 día (las fechas de inicio y fin no pueden ser iguales)"
-      );
+    dateStart.setHours(0, 0, 0, 0);
+    dateEnd.setHours(0, 0, 0, 0);
+    if (dateEnd <= dateStart) {
+      throw new Error("La reservación debe ser de al menos 1 día");
+    }
+    // Validar que la diferencia entre las fechas sea de al menos 1 día
+    const oneDayInMs = 24 * 60 * 60 * 1000; // Milisegundos en un día
+    if (dateEnd.getTime() - dateStart.getTime() < oneDayInMs) {
+      throw new Error("La reservación debe ser de al menos 1 día");
     }
     return true;
   }),

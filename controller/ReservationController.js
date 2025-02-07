@@ -201,30 +201,35 @@ export const createReservation = async (req, res) => {
         room_id,
         [Op.or]: [
           {
+            // date_start está dentro del rango de la nueva reserva (pero permitiendo que sea igual a date_end)
             date_start: { [Op.between]: [date_start, date_end] },
           },
           {
+            // date_end está dentro del rango de la nueva reserva (pero permitiendo que sea igual a date_start)
             date_end: { [Op.between]: [date_start, date_end] },
           },
           {
+            // La reserva existente cubre completamente la nueva reserva
             [Op.and]: [
-              { date_start: { [Op.lte]: date_start } },
-              { date_end: { [Op.gte]: date_end } },
+              { date_start: { [Op.lt]: date_start } },
+              { date_end: { [Op.gt]: date_end } },
             ],
           },
         ],
         status_id: { [Op.not]: 3 }, // No considerar reservaciones canceladas
       },
-      
       transaction,
     });
     
-
     // Si la habitación ya está reservada en ese rango de fechas
-    if (existingReservation) {
+    if (existingReservation && existingReservation.date_end !== date_start) {
       await transaction.rollback();
-      return res.status(400).json({ message: "La habitación ya está reservada en ese rango de fechas" });
+      return res.status(400).json({
+        message: "La habitación ya está reservada en ese rango de fechas",
+      });
     }
+    
+    
 
     // Crear la reservación
     const reservation = await ReservationModel.create(

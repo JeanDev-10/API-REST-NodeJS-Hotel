@@ -6,7 +6,8 @@ export const sequelize = new Sequelize(
     DB_PASSWORD,
     {
         host: DB_HOST,
-        dialect: DB_CONNECTION
+        dialect: DB_CONNECTION,
+        timezone: '-05:00'
     }
 );
 
