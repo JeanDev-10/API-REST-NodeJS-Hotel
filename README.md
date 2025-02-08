@@ -13,7 +13,7 @@ Esta API fue construida para gestionar reservas de habitaciones de hotel, permit
 - **JWT**: Autenticación basada en tokens.
 - **Bcrypt**: Encriptación de contraseñas.
 - **Cloudinary**: Guardar las imagenes en la nube.
-
+- **Firebase**: Autenticación con Google y Github.
 ## Reglas de Negocio
 
 ### 1. Autenticación y Usuarios
