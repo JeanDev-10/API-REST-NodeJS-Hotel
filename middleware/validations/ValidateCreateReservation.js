@@ -26,9 +26,8 @@ export const ValidateCreateReservation = [
   body("date_start").custom((value, { req }) => {
     let dateStart = new Date(value.split("T")[0]); // Extrae solo la parte de la fecha
     let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-  
-    if (dateStart < currentDate) {
+    let currentUTC = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()));
+    if (dateStart < currentUTC) {
       throw new Error("La fecha de inicio no puede ser inferior a la fecha actual");
     }
     return true;
