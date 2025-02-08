@@ -9,6 +9,8 @@ import { RoomModel } from "../models/Rooms.model.js";
 import { ImageModel } from "../models/Images.model.js";
 import { StatusReservationModel } from "../models/StatusReservation.model.js";
 import { TypesRoomModel } from "../models/TypesRooms.model.js";
+import admin from "../config/firebase.js";
+import { Op } from "sequelize";
 
 export const getUsers = async (req, res) => {
   try {
@@ -25,7 +27,7 @@ export const getUsers = async (req, res) => {
 export const getOneUser = async (req, res) => {
   try {
     const user = await UserModel.findOne({
-      attributes: ["id", "name", "lastname", "email"],
+      attributes: ["id", "name", "lastname", "email",'image'],
       where: { id: req.params.id },
       include: [
         {
@@ -85,6 +87,7 @@ export const createUsers = async (req, res) => {
       lastname: lastname.toLowerCase(),
       email: email.toLowerCase(), // sanitize: convert email to lowercase
       password: encryptedPassword,
+      image:"https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png",
       role_id: 2,
     });
 
@@ -204,31 +207,7 @@ export const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-export const refresh = (req, res) => {
-  const token = req.headers["authorization"].split(" ")[1];
-  if (!token) {
-    return res.status(401).end();
-  }
-  var payload;
-  try {
-    payload = jwt.verify(token, "secret");
-  } catch (e) {
-    if (e instanceof jwt.JsonWebTokenError) {
-      return res.status(401).end();
-    }
-    return res.status(400).end();
-  }
-  const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
-  if (payload.exp - nowUnixSeconds > 30) {
-    return res.status(400).end();
-  }
-  const newToken = jwt.sign({ username: payload.username }, jwtKey, {
-    algorithm: "HS256",
-    expiresIn: jwtExpirySeconds,
-  });
-  res.cookie("token", newToken, { maxAge: jwtExpirySeconds * 1000 });
-  res.end();
-};
+
 
 export const me = async (req, res) => {
   try {
@@ -259,4 +238,118 @@ export const me = async (req, res) => {
 };
 export const logout = (req, res) => {
   res.json({ message: "Logout exitoso" });
+};
+
+
+
+// user.controller.js - Añadir nuevo método
+export const loginWithGoogle = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    
+    // Verificar token de Firebase
+    const firebaseUser = await admin.auth().verifyIdToken(idToken);
+    
+    // Buscar usuario por email o firebaseUid
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [
+          { email: firebaseUser.email },
+          { firebaseUid: firebaseUser.uid }
+        ]
+      }
+    });
+
+    let createdUser;
+    console.log(firebaseUser)
+
+    if (!user) {
+      // Crear nuevo usuario con datos de Google
+      createdUser = await UserModel.create({
+        name: firebaseUser.name?.split(' ')[0] || 'Usuario',
+        lastname: firebaseUser.name?.split(' ')[1] || 'Google',
+        email: firebaseUser.email,
+        password:"",
+        image:firebaseUser.picture || "https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png",
+        role_id: 2, // Cliente por defecto
+        firebaseUid: firebaseUser.uid,
+        registrationMethod: 'google'
+      });
+    }
+
+    // Generar JWT compatible con tu sistema actual
+    const token = jwt.sign(
+      {
+        user_id: user?.id || createdUser.id,
+        email: firebaseUser.email,
+        role_id: user?.role_id || 2
+      },
+      TOKEN_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ 
+      message: "Autenticación exitosa",
+      token,
+      user: user || createdUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Error en autenticación con Google" });
+  }
+};
+export const loginWithGithub = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    
+    // Verificar token de Firebase
+    const firebaseUser = await admin.auth().verifyIdToken(idToken);
+    
+    // Buscar usuario por email o firebaseUid
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [
+          { email: firebaseUser.email },
+          { firebaseUid: firebaseUser.uid }
+        ]
+      }
+    });
+    console.log(firebaseUser)
+    let createdUser;
+    if (!user) {
+      // Crear nuevo usuario con datos de Google
+      createdUser = await UserModel.create({
+        name: firebaseUser.name?.split(' ')[0] || 'Usuario',
+        lastname: firebaseUser.name?.split(' ')[1] || 'Github',
+        email: firebaseUser.email,
+        image:firebaseUser.picture || "https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png",
+        password:"",
+        role_id: 2, // Cliente por defecto
+        firebaseUid: firebaseUser.uid,
+        registrationMethod: 'github'
+      });
+    }
+
+    // Generar JWT compatible con tu sistema actual
+    const token = jwt.sign(
+      {
+        user_id: user?.id || createdUser.id,
+        email: firebaseUser.email,
+        role_id: user?.role_id || 2
+      },
+      TOKEN_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ 
+      message: "Autenticación exitosa",
+      token,
+      user: user || createdUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Error en autenticación con Github" });
+  }
 };

@@ -32,6 +32,19 @@ export const UserModel = sequelize.define(
         key: "id",
       },
     },
+    firebaseUid: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: true
+    },
+    registrationMethod: {
+      type: DataTypes.ENUM('local', 'google','github'),
+      defaultValue: 'local'
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     timestamps: false,
