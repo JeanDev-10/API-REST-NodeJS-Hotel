@@ -2,13 +2,15 @@ import { body, validationResult } from "express-validator";
 
 export const ValidateCreateReservation = [
   // Validar campos obligatorios
+ 
   body("date_start")
     .notEmpty()
     .withMessage("La fecha de inicio es obligatoria")
-    .isISO8601()
+    .matches(/^\d{4}-\d{2}-\d{2}/) // Extrae solo la parte YYYY-MM-DD
     .withMessage(
       "La fecha de inicio debe tener un formato válido (YYYY-MM-DD)"
     ),
+
   body("date_end")
     .notEmpty()
     .withMessage("La fecha de fin es obligatoria")
@@ -22,12 +24,12 @@ export const ValidateCreateReservation = [
 
   // Validar y normalizar fechas
   body("date_start").custom((value, { req }) => {
-    let dateStart = new Date(value);
+    let dateStart = new Date(value.split("T")[0]); // Extrae solo la parte de la fecha
     let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+  
     if (dateStart < currentDate) {
-      throw new Error(
-        "La fecha de inicio no puede ser inferior a la fecha actual"
-      );
+      throw new Error("La fecha de inicio no puede ser inferior a la fecha actual");
     }
     return true;
   }),

@@ -11,6 +11,7 @@ export const getAllReservationsWithDetails = async (req, res) => {
   try {
     // Obtener todas las reservaciones con sus relaciones
     const reservations = await ReservationModel.findAll({
+      order: [["date_start", "DESC"]],
       include: [
         { model: UserModel,attributes:{
           exclude: ["password"], // Excluir la contraseña del usuario
@@ -46,6 +47,7 @@ export const getMyReservations = async (req, res) => {
 
     // Obtener las reservaciones del usuario logeado con sus relaciones
     const reservations = await ReservationModel.findAll({
+      order: [["date_start", "DESC"]],
       where: { user_id: userId }, // Filtrar por el ID del usuario logeado
       include: [
         { model: StatusReservationModel }, // Estado de la reservación
